@@ -59,7 +59,17 @@ export default function CardGridPage() {
         <span>{text.marketplaceSubtitle}</span>
       </div>
 
-      <section ref={shellRef} className="grid-stage" aria-label={text.gridAriaLabel}>
+      <section
+        ref={shellRef}
+        className={
+          grid.dragOverlay
+            ? 'grid-stage is-grabbing'
+            : grid.hoverCursor
+              ? 'grid-stage is-hover-draggable'
+              : 'grid-stage'
+        }
+        aria-label={text.gridAriaLabel}
+      >
         <CardGridStage ctrl={ctrl} grid={grid} />
       </section>
     </main>

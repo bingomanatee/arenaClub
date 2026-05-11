@@ -1,6 +1,14 @@
 import marketplaceData from './arenaMarketplaceBaseball.json'
 
 const colors = ['#124e78', '#9a6b12', '#1f7a4d', '#0f766e', '#b45309', '#552583']
+const knownBackImages = new Map([
+  [
+    '1872295',
+    'https://assets.arenaclub.com/800_slabs/1872295-back.png?ixlib=react-9.7.0&h=336&auto=format%2Ccompress&fit=max',
+  ],
+])
+
+export const sampleBackImages = [...knownBackImages.values()]
 
 export const dataNotes = {
   summary: `${marketplaceData.count} baseball cards loaded from Arena Club marketplace pages ${marketplaceData.pagesCollected.join(', ')}.`,
@@ -33,6 +41,7 @@ export const arenaCards = marketplaceData.cards.map((card, index) => {
     price: card.price,
     color: colors[index % colors.length],
     image: card.image,
+    backImage: knownBackImages.get(card.id) ?? null,
     alt: card.alt,
     marketplaceUrl: card.url,
     sourcePage: card.page,
