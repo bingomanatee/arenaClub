@@ -19,8 +19,9 @@ export const DRAWER_WIDTH = 184
 export const STAGE_OVERSCAN_Y = 50
 export const DRAWER_CLOSE_DELAY = 1700
 export const SCROLL_BUTTON_RADIUS = 52
-export const SCROLL_BUTTON_TOP_Y = 67
+export const SCROLL_BUTTON_TOP_Y = 28
 export const SCROLL_BUTTON_BOTTOM_OFFSET = 35
+export const PERSPECTIVE_TILT_DEFAULT = false
 
 export class GridCtrl extends Forest {
   animationFrame = 0
@@ -31,6 +32,7 @@ export class GridCtrl extends Forest {
   hoverCandidate = null
   hoverSuppressed = false
   draggingCard = null
+  scrollButtonDirection = 0
 
   constructor(cards) {
     super({
@@ -46,6 +48,7 @@ export class GridCtrl extends Forest {
         edgeIntent: { direction: 0, strength: 0 },
         hoverCursor: false,
         hoverOverlay: null,
+        perspectiveEnabled: PERSPECTIVE_TILT_DEFAULT,
         resourceVersion: 0,
         scroll: { row: 0, offset: 0 },
         stageSize: { width: 1280, height: 720 },
@@ -95,6 +98,10 @@ export class GridCtrl extends Forest {
     })
   }
 
+  setPerspectiveEnabled(enabled) {
+    this.set('perspectiveEnabled', Boolean(enabled))
+  }
+
   onPointerMove(stage) {
     const pointer = stage.getPointerPosition()
     if (!pointer) return
@@ -102,56 +109,25 @@ export class GridCtrl extends Forest {
     const eventTime = stage.getPointerPosition()?._timestamp ?? window.performance.now()
     this.updatePointer(pointer, eventTime)
     this.set('hoverCursor', this.pointInHoverOverlay(pointer))
-    const scrollButtonIntent = this.scrollButtonIntentAt(pointer)
 
-    if (this.pointInDrawerChrome(pointer) || scrollButtonIntent.direction) {
+    if (this.scrollButtonDirection) {
+      this.clearHoverCandidate()
+      return
+    }
+
+    if (this.pointInDrawerChrome(pointer)) {
       this.clearHoverCandidate()
     } else {
       this.schedulePointerHover(pointer)
     }
 
     if (this.value.drawerOpen) {
-      if (this.pointerInScrollZone(pointer) && !this.value.drawerPinned) {
-        this.closeDrawer()
-      } else {
-        this.set('edgeIntent', { direction: 0, strength: 0 })
-        return
-      }
-    }
-
-    if (!this.value.drawerOpen && this.pointInDrawerChrome(pointer)) {
       this.set('edgeIntent', { direction: 0, strength: 0 })
       return
     }
 
-    if (scrollButtonIntent.direction) {
-      this.set('edgeIntent', scrollButtonIntent)
-      return
-    }
-
-    const { height } = this.value.stageSize
-    const { maxRow } = this.metrics
-    const bottomDistance = height - pointer.y
-    const topDistance = pointer.y
-
-    if (bottomDistance < EDGE_ZONE && this.value.scroll.row < maxRow) {
-      this.clearHoverCandidate()
-      this.set('edgeIntent', {
-        direction: 1,
-        strength: 1 - bottomDistance / EDGE_ZONE,
-      })
-      return
-    }
-
-    if (
-      topDistance < EDGE_ZONE &&
-      (this.value.scroll.row > 0 || this.value.scroll.offset > 0)
-    ) {
-      this.clearHoverCandidate()
-      this.set('edgeIntent', {
-        direction: -1,
-        strength: 1 - topDistance / EDGE_ZONE,
-      })
+    if (!this.value.drawerOpen && this.pointInDrawerChrome(pointer)) {
+      this.set('edgeIntent', { direction: 0, strength: 0 })
       return
     }
 
@@ -164,6 +140,17 @@ export class GridCtrl extends Forest {
 
     event.cancelBubble = true
     event.evt?.preventDefault()
+    this.scrollByWheelDelta(deltaY)
+  }
+
+  onDomWheel(event) {
+    if (!event.deltaY) return
+    event.preventDefault()
+    this.scrollByWheelDelta(event.deltaY)
+  }
+
+  scrollByWheelDelta(deltaY) {
+    if (!deltaY) return
 
     if (this.value.hoverOverlay) this.closeHoverOverlay()
     if (this.value.drawerOpen && !this.value.drawerPinned) this.closeDrawer()
@@ -183,6 +170,28 @@ export class GridCtrl extends Forest {
         maxRow,
       )
     })
+  }
+
+  setScrollButtonIntent(direction) {
+    if (!direction) {
+      this.scrollButtonDirection = 0
+      this.set('edgeIntent', { direction: 0, strength: 0 })
+      return
+    }
+
+    if (this.value.drawerOpen && !this.value.drawerPinned) this.closeDrawer()
+    if (this.value.drawerOpen && this.value.drawerPinned) return
+
+    this.clearHoverCandidate()
+    this.scrollButtonDirection = direction
+    this.set('edgeIntent', { direction, strength: 1 })
+  }
+
+  clearScrollButtonIntent(direction) {
+    if (this.scrollButtonDirection === direction) this.scrollButtonDirection = 0
+    if (this.value.edgeIntent.direction === direction) {
+      this.set('edgeIntent', { direction: 0, strength: 0 })
+    }
   }
 
   onPointerClick(stage) {
@@ -295,6 +304,8 @@ export class GridCtrl extends Forest {
   }
 
   onPointerLeave() {
+    if (this.scrollButtonDirection) return
+
     this.clearHoverCandidate()
     this.hoverSuppressed = false
     this.set('hoverCursor', false)
@@ -348,7 +359,7 @@ export class GridCtrl extends Forest {
   }
 
   get gridTilt() {
-    if (this.value.drawerOpen) return 0
+    if (!this.value.perspectiveEnabled || this.value.drawerOpen) return 0
 
     const { direction, strength } = this.value.edgeIntent
     return direction * strength * -MAX_SCROLL_TILT_DEGREES
@@ -556,47 +567,6 @@ export class GridCtrl extends Forest {
 
   pointInDrawerChrome(pointer) {
     return pointer.x >= this.value.stageSize.width - DRAWER_WIDTH - 40
-  }
-
-  pointerInScrollZone(pointer) {
-    const { height } = this.value.stageSize
-    const { maxRow } = this.metrics
-    const bottomDistance = height - pointer.y
-    const topDistance = pointer.y
-
-    return (
-      (bottomDistance < EDGE_ZONE && this.value.scroll.row < maxRow) ||
-      (topDistance < EDGE_ZONE &&
-        (this.value.scroll.row > 0 || this.value.scroll.offset > 0))
-    )
-  }
-
-  scrollButtonIntentAt(pointer) {
-    const { height, width } = this.value.stageSize
-    const { maxRow } = this.metrics
-    const topCenter = { x: width / 2, y: SCROLL_BUTTON_TOP_Y }
-    const bottomCenter = { x: width / 2, y: height - SCROLL_BUTTON_BOTTOM_OFFSET }
-    const topDistance = Math.hypot(pointer.x - topCenter.x, pointer.y - topCenter.y)
-    const bottomDistance = Math.hypot(pointer.x - bottomCenter.x, pointer.y - bottomCenter.y)
-
-    if (
-      topDistance <= SCROLL_BUTTON_RADIUS &&
-      (this.value.scroll.row > 0 || this.value.scroll.offset > 0)
-    ) {
-      return {
-        direction: -1,
-        strength: clamp(1 - topDistance / SCROLL_BUTTON_RADIUS, 0.25, 1),
-      }
-    }
-
-    if (bottomDistance <= SCROLL_BUTTON_RADIUS && this.value.scroll.row < maxRow) {
-      return {
-        direction: 1,
-        strength: clamp(1 - bottomDistance / SCROLL_BUTTON_RADIUS, 0.25, 1),
-      }
-    }
-
-    return { direction: 0, strength: 0 }
   }
 
   addDrawerCard(card) {

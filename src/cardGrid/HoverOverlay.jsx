@@ -1,4 +1,4 @@
-import { Circle, Group, Rect } from 'react-konva'
+import { Circle, Group, Line, Rect } from 'react-konva'
 import { CARD_HEIGHT, CARD_WIDTH, LABEL_HEIGHT, OVERLAY_SCALE } from '../GridCtrl'
 import CardTile from './CardTile'
 
@@ -70,6 +70,27 @@ export default function HoverOverlay({
               />
             ))
           ))}
+        </Group>
+      )}
+      {draggable && (
+        <Group
+          key="hover-close"
+          x={CARD_WIDTH - 15}
+          y={LABEL_HEIGHT / 2}
+          onClick={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+            ctrl.closeHoverOverlay()
+          }}
+          onTap={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+            ctrl.closeHoverOverlay()
+          }}
+        >
+          <Circle radius={9} fill="#050505" opacity={0.01} />
+          <Line points={[-4, -4, 4, 4]} stroke="#ffffff" strokeWidth={1.7} lineCap="round" />
+          <Line points={[4, -4, -4, 4]} stroke="#ffffff" strokeWidth={1.7} lineCap="round" />
         </Group>
       )}
     </Group>

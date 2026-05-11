@@ -3,23 +3,25 @@ import { STAGE_OVERSCAN_Y } from '../GridCtrl'
 import CardDrawer from './CardDrawer'
 import CardTile from './CardTile'
 import HoverOverlay from './HoverOverlay'
-import ScrollIndicator from './ScrollIndicator'
 
 export default function CardGridStage({ ctrl, grid }) {
   const { height, width } = grid.stageSize
-  const stageHeight = height + STAGE_OVERSCAN_Y
+  const stageOverscan = grid.perspectiveEnabled ? STAGE_OVERSCAN_Y : 0
+  const stageHeight = height + stageOverscan
   const metrics = ctrl.metrics
   const cells = ctrl.cells
   const tiltStyle = { '--grid-tilt': `${ctrl.gridTilt}deg` }
+  const tiltClassName = grid.perspectiveEnabled
+    ? 'konva-tilt-shell is-perspective-enabled'
+    : 'konva-tilt-shell'
 
   return (
-    <div className="konva-tilt-shell" style={tiltStyle}>
+    <div className={tiltClassName} style={tiltStyle}>
       <Stage
         height={stageHeight}
         onClick={(event) => ctrl.onPointerClick(event.target.getStage())}
         onMouseLeave={ctrl.$.onPointerLeave}
         onMouseMove={(event) => ctrl.onPointerMove(event.target.getStage())}
-        onWheel={(event) => ctrl.onWheel(event)}
         width={width}
       >
         <Layer>
@@ -34,13 +36,6 @@ export default function CardGridStage({ ctrl, grid }) {
               y={y}
             />
           ))}
-          <ScrollIndicator
-            direction={grid.edgeIntent.direction}
-            height={height}
-            key="scroll-indicator"
-            strength={grid.edgeIntent.strength}
-            width={width}
-          />
           {grid.hoverOverlay && (
             <HoverOverlay
               ctrl={ctrl}
@@ -52,6 +47,7 @@ export default function CardGridStage({ ctrl, grid }) {
           )}
           <CardDrawer
             cards={grid.drawerCards}
+            contentTop={stageOverscan}
             ctrl={ctrl}
             dragging={Boolean(grid.dragOverlay)}
             dragOver={grid.dragOverDrawer}

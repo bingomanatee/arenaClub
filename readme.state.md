@@ -18,6 +18,7 @@ The serializable Forestry value contains state that directly affects rendering:
 - `edgeIntent`: pointer-driven scroll intent, `{ direction, strength }`.
 - `hoverOverlay`: the currently open large card overlay.
 - `hoverCursor`: whether the pointer is over the hover overlay.
+- `perspectiveEnabled`: feature flag for the optional CSS 3D grid tilt.
 - `drawerOpen`: whether the drawer panel is expanded.
 - `drawerPinned`: whether the drawer was opened manually and should stay open
   until a manual close.
@@ -51,7 +52,8 @@ Several values are derived instead of stored:
 - `metrics`: columns, row heights, visible rows, source row count, virtual row
   count, and max scroll row.
 - `cells`: the currently visible virtual-grid cells.
-- `gridTilt`: CSS tilt angle derived from `edgeIntent`, unless the drawer is open.
+- `gridTilt`: CSS tilt angle derived from `edgeIntent`, unless the drawer is open
+  or `perspectiveEnabled` is false.
 
 These are computed getters because they depend on multiple state fields and
 would otherwise need constant synchronization.
@@ -94,14 +96,17 @@ the drawer to collapse after `DRAWER_CLOSE_DELAY`.
 
 ### Scroll
 
-Scroll is pointer-driven:
+Scroll is button-driven, with wheel support:
 
-- Hovering over the persistent top or bottom lime triangle creates scroll intent.
-- Near the bottom edge, `edgeIntent.direction` becomes `1`.
-- Near the top edge, `edgeIntent.direction` becomes `-1`.
-- Strength increases as the pointer gets closer to the edge.
+- Hovering over the persistent bottom lime triangle creates scroll intent with
+  `edgeIntent.direction` set to `1`.
+- Hovering over the persistent top lime triangle creates scroll intent with
+  `edgeIntent.direction` set to `-1`.
 - Mouse wheel events advance the virtual scroll directly and briefly set
   `edgeIntent` so compression and tilt can respond.
+
+The up/down scroll controls are DOM overlay buttons rather than Konva shapes, so
+they remain fixed while the canvas content scrolls and, optionally, tilts.
 
 The animation loop uses `edgeIntent` to:
 
@@ -109,8 +114,10 @@ The animation loop uses `edgeIntent` to:
 - ease `compression` toward the compressed layout,
 - derive CSS perspective tilt through `gridTilt`.
 
-If the drawer is open, scroll and tilt are disabled. Moving into a scroll zone
-while the drawer is open closes the drawer first, then scrolling can proceed.
+If the drawer is open, scroll and tilt are disabled.
+Perspective tilt is behind the `perspectiveEnabled` feature flag, exposed as a
+header checkbox. It defaults off so the grid does not shift in 3D unless the
+user explicitly enables it.
 
 ### Drawer
 

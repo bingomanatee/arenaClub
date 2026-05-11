@@ -3,6 +3,7 @@ import { GridCtrl } from '../GridCtrl'
 import { arenaCards } from '../data/cards'
 import useForestryLocal from '../lib/useForestryLocal'
 import CardGridStage from './CardGridStage'
+import ScrollControls from './ScrollControls'
 import text from './text.json'
 
 export default function CardGridPage() {
@@ -45,6 +46,14 @@ export default function CardGridPage() {
         </div>
 
         <div className="toolbar-right">
+          <label className="perspective-toggle">
+            <input
+              checked={grid.perspectiveEnabled}
+              onChange={(event) => ctrl.setPerspectiveEnabled(event.target.checked)}
+              type="checkbox"
+            />
+            <span>Perspective</span>
+          </label>
           <label className="market-search">
             <span>{text.searchPlaceholder}</span>
             <input aria-label={text.searchPlaceholder} placeholder={text.searchPlaceholder} />
@@ -69,8 +78,10 @@ export default function CardGridPage() {
               : 'grid-stage'
         }
         aria-label={text.gridAriaLabel}
+        onWheel={(event) => ctrl.onDomWheel(event)}
       >
         <CardGridStage ctrl={ctrl} grid={grid} />
+        <ScrollControls ctrl={ctrl} direction={grid.edgeIntent.direction} />
       </section>
     </main>
   )

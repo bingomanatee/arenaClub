@@ -31,6 +31,12 @@ export default function ScrollIndicator({ direction, height, strength, width }) 
 function ScrollTriangle({ active, centerX, centerY, direction, opacity }) {
   const triangleHeight = 34
   const halfWidth = 26
+  const setPointerCursor = (event) => {
+    event.target.getStage().container().style.cursor = 'pointer'
+  }
+  const clearPointerCursor = (event) => {
+    event.target.getStage().container().style.cursor = ''
+  }
   const points =
     direction > 0
       ? [
@@ -51,7 +57,11 @@ function ScrollTriangle({ active, centerX, centerY, direction, opacity }) {
         ]
 
   return (
-    <Group opacity={opacity}>
+    <Group
+      opacity={opacity}
+      onMouseEnter={setPointerCursor}
+      onMouseLeave={clearPointerCursor}
+    >
       <Circle
         x={centerX}
         y={centerY}

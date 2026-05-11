@@ -125,6 +125,7 @@
 
 .arena-nav-link {
   color: #f5f7f5;
+  cursor: pointer;
   font-size: 14px;
   font-weight: 650;
   line-height: 1;
@@ -193,6 +194,24 @@
   padding: 0 16px;
 }
 
+.perspective-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #f5f7f5;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.perspective-toggle input {
+  width: 14px;
+  height: 14px;
+  accent-color: #b6ff3b;
+  cursor: pointer;
+}
+
 .market-strip {
   display: grid;
   grid-template-columns: auto auto;
@@ -224,6 +243,7 @@
 }
 
 .grid-stage {
+  position: relative;
   height: 100%;
   min-height: 0;
   overflow: hidden;
@@ -241,13 +261,66 @@
 }
 
 .konva-tilt-shell {
-  height: calc(100% + 50px);
+  height: 100%;
   overflow: hidden;
-  margin-top: -50px;
-  transform: rotateX(var(--grid-tilt));
+  transform: none;
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
+}
+
+.konva-tilt-shell.is-perspective-enabled {
+  height: calc(100% + 50px);
+  margin-top: -50px;
+  transform: rotateX(var(--grid-tilt));
+}
+
+.scroll-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.scroll-control {
+  position: absolute;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.36;
+  padding: 0;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+.scroll-control.is-active,
+.scroll-control:hover {
+  opacity: 0.9;
+}
+
+.scroll-triangle {
+  display: block;
+  width: 0;
+  height: 0;
+  filter: drop-shadow(0 4px 10px rgb(16 24 39 / 22%));
+}
+
+.scroll-triangle.is-up {
+  border-right: 26px solid transparent;
+  border-bottom: 34px solid #b6ff3b;
+  border-left: 26px solid transparent;
+}
+
+.scroll-triangle.is-down {
+  border-top: 34px solid #b6ff3b;
+  border-right: 26px solid transparent;
+  border-left: 26px solid transparent;
 }
 
 @media (max-width: 760px) {
@@ -280,6 +353,10 @@
   }
 
   .login-button {
+    display: none;
+  }
+
+  .perspective-toggle {
     display: none;
   }
 

@@ -5,17 +5,26 @@ import { CARD_WIDTH, DRAWER_WIDTH, LABEL_HEIGHT, STAGE_OVERSCAN_Y } from '../Gri
 const DRAWER_CARD_SCALE = 0.5
 const DRAWER_PADDING = 12
 const DRAWER_CARD_WIDTH = CARD_WIDTH * DRAWER_CARD_SCALE
-const DRAWER_LABEL_HEIGHT = LABEL_HEIGHT * DRAWER_CARD_SCALE
+const DRAWER_LABEL_HEIGHT = (LABEL_HEIGHT + 8) * DRAWER_CARD_SCALE
 const DRAWER_CARD_HEIGHT = DRAWER_CARD_WIDTH + DRAWER_LABEL_HEIGHT + 18
 const DRAWER_TOGGLE_MARGIN = 12
 const DRAWER_TOGGLE_RADIUS = 18
 const DRAWER_TOGGLE_HIT_RADIUS = DRAWER_TOGGLE_RADIUS * 1.5
 const PURCHASE_HEIGHT = 44
 
-export default function CardDrawer({ cards, ctrl, dragging, dragOver, height, open, width }) {
+export default function CardDrawer({
+  cards,
+  contentTop = STAGE_OVERSCAN_Y,
+  ctrl,
+  dragging,
+  dragOver,
+  height,
+  open,
+  width,
+}) {
   const drawerX = width - DRAWER_WIDTH
   const cardStep = DRAWER_CARD_HEIGHT + 16
-  const drawerTop = STAGE_OVERSCAN_Y
+  const drawerTop = contentTop
   const targetY = drawerTop + 58 + cards.length * cardStep
   const drawerTotal = cards.reduce((sum, card) => sum + (card.value || 0), 0)
   const helperText = cards.length ? `Total ${formatCurrency(drawerTotal)}` : 'Drag cards here'
@@ -27,7 +36,7 @@ export default function CardDrawer({ cards, ctrl, dragging, dragOver, height, op
           ctrl={ctrl}
           direction="left"
           x={DRAWER_WIDTH - DRAWER_TOGGLE_RADIUS - DRAWER_TOGGLE_MARGIN}
-          y={STAGE_OVERSCAN_Y + 42}
+          y={drawerTop + 42}
         />
         {cards.length > 0 && <PurchaseButton y={height - PURCHASE_HEIGHT} />}
       </Group>
@@ -116,6 +125,14 @@ export default function CardDrawer({ cards, ctrl, dragging, dragOver, height, op
 
 function DrawerToggleButton({ ctrl, direction, x, y }) {
   const [isHovered, setIsHovered] = useState(false)
+  const setPointerCursor = (event) => {
+    setIsHovered(true)
+    event.target.getStage().container().style.cursor = 'pointer'
+  }
+  const clearPointerCursor = (event) => {
+    setIsHovered(false)
+    event.target.getStage().container().style.cursor = ''
+  }
   const toggleDrawer = (event) => {
     event.cancelBubble = true
     event.evt?.stopPropagation()
@@ -136,8 +153,8 @@ function DrawerToggleButton({ ctrl, direction, x, y }) {
       x={x}
       y={y}
       onClick={toggleDrawer}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={setPointerCursor}
+      onMouseLeave={clearPointerCursor}
       onTap={toggleDrawer}
     >
       <Circle
@@ -155,8 +172,19 @@ function DrawerToggleButton({ ctrl, direction, x, y }) {
 }
 
 function PurchaseButton({ y }) {
+  const setPointerCursor = (event) => {
+    event.target.getStage().container().style.cursor = 'pointer'
+  }
+  const clearPointerCursor = (event) => {
+    event.target.getStage().container().style.cursor = ''
+  }
+
   return (
-    <Group y={y}>
+    <Group
+      y={y}
+      onMouseEnter={setPointerCursor}
+      onMouseLeave={clearPointerCursor}
+    >
       <Rect width={DRAWER_WIDTH} height={PURCHASE_HEIGHT} fill="#b6ff3b" />
       <Text
         x={0}
