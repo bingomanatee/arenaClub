@@ -2,7 +2,7 @@ import { Forest } from '@wonderlandlabs/forestry4'
 
 export const CARD_WIDTH = 192
 export const CARD_HEIGHT = 192
-export const GAP = 4
+export const GAP = 1
 export const LABEL_HEIGHT = 22
 export const EDGE_ZONE = 150
 export const MAX_SPEED = 520
@@ -12,6 +12,7 @@ export const HOVER_DELAY = 650
 export const MIN_OVERLAY_TIME = 1000
 export const OVERLAY_SCALE = 1.66
 export const OVERLAY_LIFT = 20
+export const MAX_SCROLL_TILT_DEGREES = 6
 
 export class GridCtrl extends Forest {
   animationFrame = 0
@@ -164,6 +165,11 @@ export class GridCtrl extends Forest {
     return cells
   }
 
+  get gridTilt() {
+    const { direction, strength } = this.value.edgeIntent
+    return direction * strength * -MAX_SCROLL_TILT_DEGREES
+  }
+
   tick = (time) => {
     if (!this.lastTick) this.lastTick = time
     const delta = (time - this.lastTick) / 1000
@@ -263,7 +269,7 @@ export class GridCtrl extends Forest {
     const overlayCardHeight = LABEL_HEIGHT + CARD_WIDTH * imageRatio
     const overlayWidth = CARD_WIDTH * OVERLAY_SCALE
     const nextX = clamp(x + CARD_WIDTH / 2 - overlayWidth / 2, 8, Math.max(8, width - overlayWidth - 8))
-    const nextY = Math.max(8, y)
+    const nextY = Math.max(8, y - OVERLAY_LIFT)
 
     this.set('hoverOverlay', {
       card,

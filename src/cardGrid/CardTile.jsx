@@ -1,14 +1,23 @@
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva'
 import { CARD_WIDTH, LABEL_HEIGHT } from '../GridCtrl'
 
-export default function CardTile({ card, height, image, showFooterPrice = false, x = 0, y = 0 }) {
+export default function CardTile({
+  card,
+  height,
+  image,
+  showFooterPrice = false,
+  x = 0,
+  y = 0,
+}) {
   const imageHeight = Math.max(1, height - LABEL_HEIGHT)
   const naturalImageHeight = image ? (image.height / image.width) * CARD_WIDTH : imageHeight
   const titleWidth = showFooterPrice ? CARD_WIDTH - 10 : CARD_WIDTH - 62
+  const labelFill = showFooterPrice ? '#050505' : '#2f6b20'
+  const labelTextFill = showFooterPrice ? '#b6ff3b' : '#ffffff'
 
   return (
     <Group x={x} y={y}>
-      <Rect key="label-background" x={0} y={0} width={CARD_WIDTH} height={LABEL_HEIGHT} fill="#2f6b20" />
+      <Rect key="label-background" x={0} y={0} width={CARD_WIDTH} height={LABEL_HEIGHT} fill={labelFill} />
       <Text
         key="player"
         x={5}
@@ -16,7 +25,7 @@ export default function CardTile({ card, height, image, showFooterPrice = false,
         width={titleWidth}
         height={LABEL_HEIGHT - 6}
         text={card.player}
-        fill="#ffffff"
+        fill={labelTextFill}
         fontSize={10}
         fontStyle="bold"
         ellipsis

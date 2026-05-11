@@ -42,7 +42,7 @@
 .arena-nav {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
   min-width: 0;
 }
 
@@ -148,23 +148,34 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  perspective: 820px;
+  perspective-origin: 50% 50%;
   cursor: ns-resize;
+}
+
+.konva-tilt-shell {
+  height: 100%;
+  overflow: hidden;
+  transform: rotateX(var(--grid-tilt));
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 @media (max-width: 760px) {
   .toolbar {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 8px 10px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    min-height: 48px;
+    padding: 6px 10px;
   }
 
   .toolbar-left {
-    justify-content: space-between;
     gap: 12px;
   }
 
   .arena-nav {
-    gap: 12px;
+    gap: 14px;
     overflow: hidden;
   }
 
@@ -173,13 +184,11 @@
   }
 
   .toolbar-right {
-    justify-content: stretch;
+    justify-content: end;
   }
 
   .market-search {
-    flex: 1;
-    min-width: 0;
-    width: auto;
+    display: none;
   }
 
   .login-button {
@@ -191,9 +200,14 @@
   }
 
   .market-strip {
-    grid-template-columns: 1fr;
-    gap: 1px;
-    height: 38px;
-    padding: 3px 10px;
+    height: 28px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 620px) {
+  .arena-nav-link:nth-child(3),
+  .arena-nav-link:nth-child(4) {
+    display: none;
   }
 }
