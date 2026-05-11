@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122 40" role="img" aria-labelledby="title">
+  <title id="title">Arena Club</title>
+  <rect width="122" height="40" fill="#050505"/>
+  <path d="M14 8h42v24H14V8Zm4 4v16h34V12H18Z" fill="#7f8680"/>
+  <path d="M22 15h24v3H22v-3Zm0 7h24v3H22v-3Z" fill="#cdd2cc"/>
+  <text x="66" y="17" fill="#f5f7f5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="800" letter-spacing="1">ARENA</text>
+  <text x="66" y="29" fill="#93c47d" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="800" letter-spacing="1">CLUB</text>
+</svg>

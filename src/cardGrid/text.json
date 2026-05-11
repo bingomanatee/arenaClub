@@ -1,0 +1,10 @@
+{
+  "gridAriaLabel": "Arena Club card grid",
+  "logoAlt": "Arena Club",
+  "marketplaceTitle": "Baseball marketplace",
+  "marketplaceSubtitle": "Featured baseball cards",
+  "nav": ["Packs", "Marketplace", "Showrooms", "Grading"],
+  "searchPlaceholder": "Search marketplace",
+  "login": "Log in",
+  "signup": "Sign up"
+}
