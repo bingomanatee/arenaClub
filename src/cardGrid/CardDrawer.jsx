@@ -5,7 +5,7 @@ import { CARD_WIDTH, DRAWER_WIDTH, LABEL_HEIGHT, STAGE_OVERSCAN_Y } from '../Gri
 const DRAWER_CARD_SCALE = 0.5
 const DRAWER_PADDING = 12
 const DRAWER_CARD_WIDTH = CARD_WIDTH * DRAWER_CARD_SCALE
-const DRAWER_LABEL_HEIGHT = (LABEL_HEIGHT + 8) * DRAWER_CARD_SCALE
+const DRAWER_LABEL_HEIGHT = LABEL_HEIGHT * DRAWER_CARD_SCALE + 8
 const DRAWER_CARD_HEIGHT = DRAWER_CARD_WIDTH + DRAWER_LABEL_HEIGHT + 18
 const DRAWER_TOGGLE_MARGIN = 12
 const DRAWER_TOGGLE_RADIUS = 18
@@ -275,7 +275,7 @@ function DrawerCard({ card, ctrl, image, x, y }) {
         width={DRAWER_CARD_WIDTH}
         height={14}
         text={card.price ?? ''}
-        fill="#b6ff3b"
+        fill="#ffffff"
         fontSize={13}
         fontStyle="bold"
         align="center"

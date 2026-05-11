@@ -1,4 +1,5 @@
-import { Circle, Group, Line, Rect } from 'react-konva'
+import { useState } from 'react'
+import { Circle, Group, Line, Rect, Text } from 'react-konva'
 import { CARD_HEIGHT, CARD_WIDTH, LABEL_HEIGHT, OVERLAY_SCALE } from '../GridCtrl'
 import CardTile from './CardTile'
 
@@ -9,8 +10,11 @@ export default function HoverOverlay({
   image,
   overlay,
 }) {
+  const [isAddHovered, setIsAddHovered] = useState(false)
   const imageHeight = image ? (image.height / image.width) * CARD_WIDTH : CARD_HEIGHT - LABEL_HEIGHT
   const cardHeight = LABEL_HEIGHT + imageHeight
+  const addButtonWidth = 66
+  const addButtonHeight = 17
 
   return (
     <Group
@@ -91,6 +95,58 @@ export default function HoverOverlay({
           <Circle radius={9} fill="#050505" opacity={0.01} />
           <Line points={[-4, -4, 4, 4]} stroke="#ffffff" strokeWidth={1.7} lineCap="round" />
           <Line points={[4, -4, -4, 4]} stroke="#ffffff" strokeWidth={1.7} lineCap="round" />
+        </Group>
+      )}
+      {draggable && (
+        <Group
+          key="hover-add-cart"
+          x={CARD_WIDTH - addButtonWidth - 7}
+          y={Math.max(LABEL_HEIGHT + 4, cardHeight - 23)}
+          onClick={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+            ctrl.addDrawerCard(overlay.card)
+          }}
+          onMouseDown={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+          }}
+          onMouseEnter={(event) => {
+            setIsAddHovered(true)
+            event.target.getStage().container().style.cursor = 'pointer'
+          }}
+          onMouseLeave={(event) => {
+            setIsAddHovered(false)
+            event.target.getStage().container().style.cursor = ''
+          }}
+          onTap={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+            ctrl.addDrawerCard(overlay.card)
+          }}
+          onTouchStart={(event) => {
+            event.cancelBubble = true
+            event.evt?.stopPropagation()
+          }}
+        >
+          <Rect
+            width={addButtonWidth}
+            height={addButtonHeight}
+            fill="#5a5a5a"
+            cornerRadius={2}
+          />
+          <Text
+            x={4}
+            y={3}
+            width={addButtonWidth - 8}
+            height={addButtonHeight - 4}
+            text="Add to cart"
+            fill={isAddHovered ? '#ffffff' : '#b6ff3b'}
+            fontSize={8}
+            fontStyle="bold"
+            align="center"
+            wrap="none"
+          />
         </Group>
       )}
     </Group>

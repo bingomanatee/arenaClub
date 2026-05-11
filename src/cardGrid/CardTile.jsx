@@ -97,15 +97,15 @@ export default function CardTile({
       {showFooterPrice && (
         <Text
           key="footer-price"
-          x={CARD_WIDTH - 72}
+          x={7}
           y={Math.max(LABEL_HEIGHT + 4, height - 22)}
-          width={66}
+          width={74}
           height={16}
           text={card.price ?? ''}
           fill="#b6ff3b"
           fontSize={12}
           fontStyle="bold"
-          align="right"
+          align="left"
           shadowColor="#101827"
           shadowBlur={3}
           shadowOpacity={0.8}
