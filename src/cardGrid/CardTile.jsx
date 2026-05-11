@@ -1,10 +1,11 @@
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva'
-import { CARD_WIDTH, LABEL_HEIGHT } from '../GridCtrl'
+import { CARD_WIDTH, IMAGE_Y_OFFSET, LABEL_HEIGHT } from '../GridCtrl'
 
 export default function CardTile({
   card,
   height,
   image,
+  imageYOffset = IMAGE_Y_OFFSET,
   showFooterPrice = false,
   x = 0,
   y = 0,
@@ -53,7 +54,7 @@ export default function CardTile({
             key="image"
             image={image}
             x={0}
-            y={0}
+            y={imageYOffset}
             width={CARD_WIDTH}
             height={naturalImageHeight}
           />

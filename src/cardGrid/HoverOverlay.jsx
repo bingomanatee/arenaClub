@@ -35,6 +35,7 @@ export default function HoverOverlay({ image, overlay }) {
         card={overlay.card}
         height={cardHeight}
         image={image}
+        imageYOffset={0}
         showFooterPrice
       />
     </Group>

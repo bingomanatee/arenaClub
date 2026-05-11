@@ -13,6 +13,7 @@ export const MIN_OVERLAY_TIME = 1000
 export const OVERLAY_SCALE = 1.66
 export const OVERLAY_LIFT = 20
 export const MAX_SCROLL_TILT_DEGREES = 6
+export const IMAGE_Y_OFFSET = -80
 
 export class GridCtrl extends Forest {
   animationFrame = 0
